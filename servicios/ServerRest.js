@@ -5,27 +5,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
+const mongoose_1 = __importDefault(require("mongoose"));
 require("./config/config");
+const usuarios_1 = require("./servicios/usuarios/usuarios");
 const app = express_1.default();
 app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use(body_parser_1.default.json());
-app.get('/consultarUsuario', (req, res) => {
-    res.json("usuarios");
-});
-app.post('/registrarUsuario', (req, res) => {
-    let usuario = req.body;
-    if (usuario.nombre === undefined) {
-        res.status(400).json({
-            exito: false,
-            codError: "JC_001",
-            mensaje: "El nombre es requerido para crear el usuario."
-        });
-        return;
-    }
-    res.json({
-        exito: true,
-        usuario: usuario
-    });
+//app.use(require('./servicios/usuarios/usuarios'));
+app.use(usuarios_1.appUsuario);
+mongoose_1.default.connect('mongodb://localhost:27017/cafe_db', (error) => {
+    if (error)
+        throw error;
+    console.log("Conexion exitosa a la base de datos");
 });
 app.listen(process.env.PUERTO, () => {
     console.log('Poerto servicio : ', process.env.PUERTO);
