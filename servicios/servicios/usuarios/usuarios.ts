@@ -1,11 +1,13 @@
 import express from "express";
 import bcrypt from 'bcrypt';
 import _ from 'underscore';
+import { verificarToken, verificarUsuario } from '../../middlewares/autenticacion';
+
 const UsuarioSchema = require('../../modelos/usuarios');
 export const appUsuario = express();
 
 
-appUsuario.get('/consultarUsuario', (req, res) => {
+appUsuario.get('/consultarUsuario', verificarToken, (req, res) => {
     
     //parametros opcionales query:
     let desde:number = Number(req.query.desde || 0);
@@ -35,7 +37,7 @@ appUsuario.get('/consultarUsuario', (req, res) => {
 
 });
 
-appUsuario.post('/registrarUsuario', (req, res) => {
+appUsuario.post('/registrarUsuario', [verificarToken, verificarUsuario], (req:any, res:any) => {
     let usuario= req.body;
 
     if(usuario.nombre === undefined){
@@ -70,7 +72,7 @@ appUsuario.post('/registrarUsuario', (req, res) => {
     
 }); 
 
-appUsuario.put('/actualizarUsuario/:id', function(req, res) {
+appUsuario.put('/actualizarUsuario/:id', [verificarToken, verificarUsuario], function(req:any, res:any) {
     let id= req.params.id;
     let usuario= _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado', 'password']); // con esta funcion hacemos una copia del objeto con solo los campos que estn en el arreglo
     if(usuario.password){
@@ -94,7 +96,7 @@ appUsuario.put('/actualizarUsuario/:id', function(req, res) {
 });
 
 //borrado fisico
-appUsuario.delete('/eliminarUsuario', function(req, res){
+appUsuario.delete('/eliminarUsuario', [verificarToken,verificarUsuario], function(req, res){
 
     let body = req.body;
 
@@ -118,7 +120,7 @@ appUsuario.delete('/eliminarUsuario', function(req, res){
 });
 
 //borrado logico
-appUsuario.delete('/eliminarUsuarioLogico', function(req, res){
+appUsuario.delete('/eliminarUsuarioLogico', verificarToken, function(req, res){
 
     let body = req.body;
 

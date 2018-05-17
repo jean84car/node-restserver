@@ -7,12 +7,11 @@ const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const mongoose_1 = __importDefault(require("mongoose"));
 require("./config/config");
-const usuarios_1 = require("./servicios/usuarios/usuarios");
+const indexServicios_1 = require("./servicios/indexServicios");
 const app = express_1.default();
 app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use(body_parser_1.default.json());
-//app.use(require('./servicios/usuarios/usuarios'));
-app.use(usuarios_1.appUsuario);
+app.use(indexServicios_1.appServicios);
 mongoose_1.default.connect('mongodb://localhost:27017/cafe_db', (error) => {
     if (error)
         throw error;

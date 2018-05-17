@@ -6,9 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const underscore_1 = __importDefault(require("underscore"));
+const autenticacion_1 = require("../../middlewares/autenticacion");
 const UsuarioSchema = require('../../modelos/usuarios');
 exports.appUsuario = express_1.default();
-exports.appUsuario.get('/consultarUsuario', (req, res) => {
+exports.appUsuario.get('/consultarUsuario', autenticacion_1.verificarToken, (req, res) => {
     //parametros opcionales query:
     let desde = Number(req.query.desde || 0);
     let limite = Number(req.query.limite || 5);
@@ -32,7 +33,7 @@ exports.appUsuario.get('/consultarUsuario', (req, res) => {
         });
     });
 });
-exports.appUsuario.post('/registrarUsuario', (req, res) => {
+exports.appUsuario.post('/registrarUsuario', [autenticacion_1.verificarToken, autenticacion_1.verificarUsuario], (req, res) => {
     let usuario = req.body;
     if (usuario.nombre === undefined) {
         return res.status(400).json({
@@ -60,7 +61,7 @@ exports.appUsuario.post('/registrarUsuario', (req, res) => {
         });
     });
 });
-exports.appUsuario.put('/actualizarUsuario/:id', function (req, res) {
+exports.appUsuario.put('/actualizarUsuario/:id', [autenticacion_1.verificarToken, autenticacion_1.verificarUsuario], function (req, res) {
     let id = req.params.id;
     let usuario = underscore_1.default.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado', 'password']); // con esta funcion hacemos una copia del objeto con solo los campos que estn en el arreglo
     if (usuario.password) {
@@ -80,7 +81,7 @@ exports.appUsuario.put('/actualizarUsuario/:id', function (req, res) {
     });
 });
 //borrado fisico
-exports.appUsuario.delete('/eliminarUsuario', function (req, res) {
+exports.appUsuario.delete('/eliminarUsuario', [autenticacion_1.verificarToken, autenticacion_1.verificarUsuario], function (req, res) {
     let body = req.body;
     console.log('Eliminando el usuario co el id: ' || body.id);
     UsuarioSchema.findByIdAndRemove(body.id, (error, usuarioRemove) => {
@@ -99,7 +100,7 @@ exports.appUsuario.delete('/eliminarUsuario', function (req, res) {
     });
 });
 //borrado logico
-exports.appUsuario.delete('/eliminarUsuarioLogico', function (req, res) {
+exports.appUsuario.delete('/eliminarUsuarioLogico', autenticacion_1.verificarToken, function (req, res) {
     let body = req.body;
     console.log(`Eliminando el usuario con el id: ${body.id}`);
     UsuarioSchema.findByIdAndUpdate(body.id, { estado: false }, { new: true, runValidators: true }, (error, usuarioDB) => {
