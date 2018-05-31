@@ -96,7 +96,7 @@ appUsuario.put('/actualizarUsuario/:id', [verificarToken, verificarUsuario], fun
 });
 
 //borrado fisico
-appUsuario.delete('/eliminarUsuario', [verificarToken,verificarUsuario], function(req, res){
+appUsuario.delete('/eliminarUsuario', [verificarToken,verificarUsuario], function(req:any, res:any){
 
     let body = req.body;
 
